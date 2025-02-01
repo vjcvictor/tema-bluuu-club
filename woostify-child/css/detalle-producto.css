@@ -209,3 +209,7 @@ span.rating-text {
     text-decoration: none;
     cursor: pointer;
   }
+
+ #modalCheckout .modal-dialog-scrollable .modal-body{
+    overflow-y: auto !important;
+ }

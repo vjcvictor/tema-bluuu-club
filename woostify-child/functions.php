@@ -281,10 +281,19 @@ add_action('woocommerce_after_add_to_cart_button', 'agregar_boton_comprar_ahora'
 
 function agregar_boton_comprar_ahora() {
     global $product;
-    if ( ! $product->is_in_stock() ) {
+    if ( ! $product ) {
         return;
     }
-    echo '<button id="comprar-ahora-boton" type="button" class="button comprar-ahora" alt" data-product-id="' . esc_attr( $product->get_id() ) . '"><svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" version="1.1" width="17" height="17" viewBox="0 0 17 17" id="svg50" sodipodi:docname="shopping-cart-2.svg" inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)">
+    
+    $producto_id = $product->get_id();
+    $precio = $product->get_price();
+
+    echo '<button type="button" class="button comprar-ahora comprar-ahora-btn" 
+     data-product-id="'. esc_attr( $producto_id ).'" 
+        data-precio="'. esc_attr( $precio ).'" 
+        data-toggle="modal" 
+        data-target="#modalCheckout">
+    <svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" version="1.1" width="17" height="17" viewBox="0 0 17 17" id="svg50" sodipodi:docname="shopping-cart-2.svg" inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)">
   <metadata id="metadata56">
     <rdf:rdf>
       <cc:work rdf:about="">
@@ -314,7 +323,7 @@ function agregar_boton_comprar_ahora() {
 
 
 // Agregar el botón "Comprar Ahora" en la página de producto individual
-add_action('woocommerce_after_add_to_cart_button', 'agregar_boton_comprar_ahora_movil');
+//add_action('woocommerce_after_add_to_cart_button', 'agregar_boton_comprar_ahora_movil');
 
 function agregar_boton_comprar_ahora_movil() {
     global $product;
@@ -626,4 +635,162 @@ function mostrar_titulo_con_estrellas() {
 
 
 
-require_once( get_stylesheet_directory() . '/ajax-handlers.php' );
+/*require_once( get_stylesheet_directory() . '/ajax-handlers.php' );*/
+
+
+
+// Encolar scripts y estilos necesarios
+function mi_tema_enqueue_scripts() {
+     $timestamp = time();
+    // Asegurarse de tener jQuery (normalmente ya está cargado en WordPress)
+    wp_enqueue_script( 'jquery' );
+    
+    // Ejemplo: encolar Bootstrap (opcional, ajusta según la librería de modal que prefieras)
+    wp_enqueue_style( 'bootstrap-css', 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css' );
+    wp_enqueue_script( 'bootstrap-js', 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js', array('jquery'), null, true );
+    
+    // Encolar nuestro script personalizado
+    wp_enqueue_script( 'mi-modal-script', get_stylesheet_directory_uri() . '/js/mi-modal.js', array('jquery'), $timestamp, true );
+     // Pasamos variables de PHP a nuestro script (la URL para AJAX)
+     wp_localize_script( 'mi-modal-script', 'mi_ajax_obj', array( 
+        'ajax_url' => admin_url( 'admin-ajax.php' ) 
+    ) );
+}
+add_action( 'wp_enqueue_scripts', 'mi_tema_enqueue_scripts' );
+
+
+// Asegúrate de que esta función se use en lugar de la original, ya sea reemplazándola o a través de hooks en tu tema.
+
+
+// Agregar la estructura HTML del Modal en el footer
+function agregar_modal_checkout() {
+    ?>
+    <!-- Modal de Checkout -->
+    <div class="modal fade" id="modalCheckout" tabindex="-1" role="dialog" aria-labelledby="modalCheckoutLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalCheckoutLabel">Finalizar Compra</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!-- Sección de selección de cantidad -->
+            <div id="seleccion-cantidad" class="mb-4">
+                <p>Selecciona la cantidad que deseas comprar:</p>
+                <div class="btn-group btn-group-toggle" data-toggle="buttons"> 
+                  <label class="btn btn-secondary active">
+                    <input type="radio" name="cantidad" value="1" autocomplete="off" checked> 1 unidad (<span class="precio-option"></span>)
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="cantidad" value="2" autocomplete="off"> 2 unidades (<span class="precio-option"></span>)
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="cantidad" value="3" autocomplete="off"> 3 unidades (<span class="precio-option"></span>)
+                  </label>
+                </div>
+                <button id="continuar-checkout" class="btn btn-success mt-3">Continuar con el pago</button>
+            </div>
+            <!-- Sección del formulario de checkout (inicialmente oculta) -->
+            <div id="checkout-formulario" style="display:none;">
+               
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <?php
+}
+add_action( 'wp_footer', 'agregar_modal_checkout' );
+
+
+// Función AJAX para actualizar el carrito con el producto y cantidad seleccionados
+function actualizar_carrito_con_producto() {
+    if ( isset($_POST['product_id']) && isset($_POST['cantidad']) ) {
+        $product_id = intval( $_POST['product_id'] );
+        $cantidad   = intval( $_POST['cantidad'] );
+        
+        if ( WC()->cart ) {
+            WC()->cart->empty_cart();
+            WC()->cart->add_to_cart( $product_id, $cantidad );
+        }
+        
+        wp_send_json_success( array( 'mensaje' => 'Carrito actualizado.' ) );
+    }
+    wp_send_json_error( array( 'mensaje' => 'Datos insuficientes.' ) );
+}
+add_action('wp_ajax_actualizar_carrito', 'actualizar_carrito_con_producto');
+add_action('wp_ajax_nopriv_actualizar_carrito', 'actualizar_carrito_con_producto');
+
+
+
+
+
+function cargar_checkout_form_ajax() {
+    // Forzamos que WooCommerce considere que estamos en la página de checkout
+    if ( ! defined( 'WOOCOMMERCE_CHECKOUT' ) ) {
+        define( 'WOOCOMMERCE_CHECKOUT', true );
+    }
+    // Aplicamos filtros para forzar que WooCommerce y el tema consideren que es la página de checkout
+    add_filter( 'woocommerce_is_checkout', '__return_true' );
+    add_filter( 'is_checkout', '__return_true' );
+    
+    ob_start();
+    echo do_shortcode('[woocommerce_checkout]');
+    $checkout_form = ob_get_clean();
+    echo $checkout_form;
+    wp_die();
+}
+add_action('wp_ajax_cargar_checkout_form', 'cargar_checkout_form_ajax');
+add_action('wp_ajax_nopriv_cargar_checkout_form', 'cargar_checkout_form_ajax');
+
+
+
+
+
+function cargar_scripts_checkout_global() {
+    if ( ! is_checkout() ) {
+        // Esto fuerza la carga del script de checkout en todas las páginas
+        wp_enqueue_script( 'wc-checkout' );
+    }
+}
+//add_action( 'wp_enqueue_scripts', 'cargar_scripts_checkout_global', 20 );
+
+
+//add_filter( 'woocommerce_checkout_fields', 'tu_funcion_personalizada_para_campos', 10, 1 );
+
+
+// 1.1. Agregar el campo "cedula" en la sección de facturación
+add_filter('woocommerce_checkout_fields', 'custom_add_cedula_field');
+function custom_add_cedula_field( $fields ) {
+    $fields['billing']['billing_cedula'] = array(
+        'label'       => __('Cédula', 'textdomain'),
+        'placeholder' => __('Ingrese su cédula', 'textdomain'),
+        'required'    => true,
+        'clear'       => false,
+        'type'        => 'number',
+        'class'       => array('form-row-wide'),
+        'priority'    => 22,
+    );
+    return $fields;
+}
+
+// 1.2. Guardar el campo "cedula" en el meta del pedido
+add_action('woocommerce_checkout_update_order_meta', 'custom_save_cedula_field');
+function custom_save_cedula_field( $order_id ) {
+    if ( isset($_POST['billing_cedula']) && !empty($_POST['billing_cedula']) ) {
+        update_post_meta( $order_id, 'Cédula', sanitize_text_field( $_POST['billing_cedula'] ) );
+    }
+}
+
+// 1.3. Mostrar el campo "Cédula" en el área de administración (en los detalles del pedido)
+add_action('woocommerce_admin_order_data_after_billing_address', 'custom_display_cedula_in_admin_order', 10, 1);
+function custom_display_cedula_in_admin_order( $order ) {
+    $cedula = get_post_meta( $order->get_id(), 'Cédula', true );
+    if ( $cedula ) {
+        echo '<p><strong>' . __('Cédula', 'textdomain') . ':</strong> ' . esc_html( $cedula ) . '</p>';
+    }
+}
+
+
