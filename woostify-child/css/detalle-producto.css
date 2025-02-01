@@ -1,0 +1,211 @@
+@media (min-width: 992px){
+	*{
+	overflow:visible !important;
+}
+
+.woostify-container,.content-area,.site-main,.product,.product-page-container, .woostify-container,.flickity-slider {
+	overflow:visible !important
+}
+
+
+.flickity-viewport,.product-gallery,.product-images,.product-images-container,.image-item,.product-thumbnail-images,.product-thumbnail-images-container{
+	overflow:hidden !important;
+}
+
+
+.product-gallery {
+    position: -webkit-sticky; 
+    position: sticky !important;
+    top: 10%; 
+    height: 100% !important; 
+    overflow: auto!important; 
+}
+.product-summary {
+    overflow:auto!important;
+}
+	
+	.product-images{
+		max-width: 450px;
+		max-height: 450px;
+		border-radius: 24px;
+		margin: 0 auto;
+	}
+	.product-images img{
+		object-fit: cover; 
+	}
+	#comprar-ahora-boton-movil{
+	display:none;
+}
+	
+}
+@media (max-width: 992px){
+#comprar-ahora-boton-movil{
+	opacity: 0 ;
+}
+	
+	.product-images{
+		border-radius: 24px;
+	}
+
+.activo{
+	position:fixed;
+	bottom: 10px;
+	opacity: 1  !important;
+}
+}
+
+
+p {
+    
+    margin: 0px!important;
+}
+
+/* Estilo para el precio con el rectángulo "Oferta" */
+.precio-con-oferta {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Espacio entre el precio y el rectángulo */
+	font-size: 1.3rem;
+}
+
+.rectangulo-oferta {
+	display: inline-block;
+    background-color: #4770db;
+    color: #fff;
+    padding: 5px 15px;
+    font-size: 0.9rem;
+    line-height: 0.9;
+}
+p.stock.in-stock {
+    font-size: 1.25rem;
+}
+
+span.estrellas svg {
+    fill: #ffc800;
+}
+span.rating-text {
+	font-size: 1.45rem;
+	color: #ffc800;;
+}
+
+.titulo-con-estrellas p {
+    color: #feaa11;
+}
+
+
+/* Contenedor principal de los comentarios */
+.custom-comments-section {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas por defecto */
+    gap: 20px; /* Espacio entre las columnas */
+	padding: 5px;
+}
+
+/* Estilo para cada comentario individual */
+.custom-comment {
+    display: flex;
+    align-items: center;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0px 5px 0px rgb(0 0 0 / 49%);
+    flex-direction: column;
+    margin: 10px 0px;
+}
+.custom-comment-img, .custom-comment-img-inicial {
+	width: 70px;
+    height: 70px;
+    position: relative;
+    top: -36px;
+    border-radius: 50%;
+    display: flex;
+    background-color: white;
+    box-shadow: 0 0px 15px 1px rgb(131 131 131);
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* Imagen del comentario */
+.custom-comment-img img {
+    max-width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%; /* Imagen redondeada */
+    margin-right: 15px;
+}
+
+/* Contenido del comentario (nombre y texto) */
+.custom-comment-content h4 {
+	margin: 0 0 5px;
+    font-size: 18px;
+    color: #262727;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1.2;
+}
+.ttcoment{
+	text-align: center;
+	font-size: 1.5rem;
+}
+.custom-comment-content p {
+	margin: 0;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.5;
+}
+.custom-comment-content {
+    margin-top: -20px;
+}
+/* Responsividad */
+@media (max-width: 768px) {
+    .custom-comments-section {
+        grid-template-columns: repeat(2, 1fr); /* 2 columnas en móviles */
+    }
+}
+
+@media (max-width: 480px) {
+    .custom-comments-section {
+        /*grid-template-columns: 1fr;*/ /* 1 columna en pantallas muy pequeñas */
+    }
+}
+
+
+/* Estilos para la modal */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgb(0,0,0); 
+    background-color: rgba(0,0,0,0.4); 
+    padding-top: 60px;
+  }
+  
+  .modal-contenido {
+    background-color: #fefefe;
+    margin: 5% auto; 
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; 
+  }
+  
+  .cerrar-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .cerrar-modal:hover,
+  .cerrar-modal:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
